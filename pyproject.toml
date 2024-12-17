@@ -1,0 +1,12 @@
+[project]
+name = "fbkan-navier-stokes"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "neuromancer>=1.5.2",
+    "numpy>=1.23.5",
+    "pyqt5>=5.15.11",
+    "torch>=2.5.1",
+]

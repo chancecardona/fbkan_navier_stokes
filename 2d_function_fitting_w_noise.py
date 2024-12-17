@@ -221,7 +221,7 @@ trainer_fbkan = Trainer(
 trainer_kan = Trainer(
     problem_kan.to(device),
     train_data=train_loader,
-    test_data=test_loader,
+    dev_data=test_loader,
     optimizer= torch.optim.Adam(problem_kan.parameters(), lr=init_lr),#schedule_kan.optimizer,
     epoch_verbose=epoch_verbose,
     logger=logger_kan,
@@ -246,9 +246,7 @@ trained_model_kan = problem_kan.nodes[0]
 z_test_pred_kan = trained_model_kan(test_data.datadict)['z_hat'].cpu().detach().numpy()
 
 
-### Plotting ###
-# Plotting results
-
+### Plotting Results ###
 # Get the losses from the trainers
 losses_fbkan = trainer_fbkan.logger.get_losses()
 losses_kan = trainer_kan.logger.get_losses()
