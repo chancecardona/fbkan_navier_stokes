@@ -342,7 +342,7 @@ problem.load_state_dict(best_model)
 
 ### Evaluate Results ### 
 # Evaluate trained PINN on test data (all the data in the domain)
-PINN = problem.nodes[0]
+PINN = problem.nodes[0].cpu()
 U_pinn = PINN(test_data.datadict)['U']
 
 # arrange data for plotting
