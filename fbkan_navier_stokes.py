@@ -88,7 +88,7 @@ bottom_bc_vx  = ic_U[:, [0], 0]
 bottom_bc_vy  = ic_U[:, [0], 1]
 bottom_bc_p   = ic_U[:, [0], 2]
 
-print("Boundary Condition dimensions (l,r,u,d")
+print("Boundary Condition dimensions (l,r,u,d)")
 print(left_bc_X.shape)
 print(right_bc_X.shape)
 print(top_bc_X.shape)
@@ -152,4 +152,47 @@ ax.set_ylabel('y')
 ax.legend(loc='upper right')
 ax.set_aspect('equal', 'box')
 plt.show()
+
+
+### Dataset Creation for Neuromancer ###
+from neuromancer.dataset import DictDataset
+
+# turn on gradients for PINN
+X_train.requires_grad=True
+Y_train.requires_grad=True
+
+# Training dataset
+train_data = DictDataset({'x': X_train, 'y':Y_train}, name='train')
+# test dataset
+test_data = DictDataset({'x': X_test, 'y':Y_test}, name='test')
+
+# torch dataloaders
+batch_size = X_train.shape[0]  # full batch training
+train_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size,
+                                           collate_fn=train_data.collate_fn,
+                                           shuffle=False)
+test_loader = torch.utils.data.DataLoader(test_data, batch_size=batch_size,
+                                         collate_fn=test_data.collate_fn,
+                                         shuffle=False)
+
+
+
+
+### Neuromancer NN Architecture ###
+from neuromancer.modules import blocks
+from neuromancer.system import Node, System
+
+# neural net to solve the PDE problem
+net = blocks.KANBlock(insize=2,
+                      outsize=3,
+                      hsizes=[5,5],
+                      spline_order=5)
+
+# symbolic wrapper of the neural net
+# [x,y] inputs, [U] generalized outputs [vx, vy, p]
+pde_net = Node(net, ['x', 'y'], ['U'], name='net')
+print("symbolic inputs  of the pde_net:", pde_net.input_keys)
+print("symbolic outputs of the pde_net:", pde_net.output_keys)
+
+#pde_net(train_data.datadict) gives us our U tensor.
 
